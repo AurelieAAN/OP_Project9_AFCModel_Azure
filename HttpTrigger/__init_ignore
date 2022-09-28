@@ -41,7 +41,7 @@ def user_recommendation(dfs_user_art, arts,art_embed, x):
     return sim_scores
 
 
-def main(req: func.HttpRequest, dfsblob: func.InputStream, dfsuserartblob: func.InputStream, articlesembedblob: func.InputStream) -> func.HttpResponse:
+def main(req: func.HttpRequest, dfsblob: func.InputStream) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     # Reading from the input binding
     dfs = bytearray(dfsblob.read())

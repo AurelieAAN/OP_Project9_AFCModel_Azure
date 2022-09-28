@@ -57,9 +57,7 @@ def generate_recommendation(model, user_id, dfs_user_art, dfs, n_items):
     return result
 
 
-def main(req: func.HttpRequest, dfsblob: func.InputStream,
-         dfsuserartblob: func.InputStream,
-         articlesembedblob: func.InputStream) -> func.HttpResponse:
+def main(req: func.HttpRequest, dfsblob: func.InputStream) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/input/model.pkl?sp=r&st=2022-09-28T04:04:08Z&se=2023-09-28T12:04:08Z&spr=https&sv=2021-06-08&sr=b&sig=B5wtMVnqNKjzodiTotO2ci6Z9OfVCYrEEUuj6pe9nfs%3D")
     download_stream = blob_client.download_blob()
@@ -68,8 +66,7 @@ def main(req: func.HttpRequest, dfsblob: func.InputStream,
     logging.info('=========above is content of test1')
     logging.info('=========below is content of files csv')
     dfs = transform_to_dataframe(dfsblob)
-    dfs_user_art = transform_to_dataframe(dfsuserartblob)
-    df_arts_embedd_acp = transform_to_dataframe(articlesembedblob)
+    dfs_user_art = dfs.groupby(["user_id", "click_article_id"])["click_article_id"].count().reset_index(name="nb_click_by_arts")
     logging.info('=========above is content of files csv')
     req_body_bytes = req.get_body()
     req_body = req_body_bytes.decode("utf-8")

@@ -19,13 +19,6 @@
       "connection": "storageacc_STORAGE"
     },
     {
-      "type": "blob",
-      "direction":"in",
-      "name": "blobembed",
-      "path": "input/df_arts_embedd_acp_v2.csv",
-      "connection": "storageacc_STORAGE"
-    },
-    {
       "type": "http",
       "direction": "out",
       "name": "$return"
