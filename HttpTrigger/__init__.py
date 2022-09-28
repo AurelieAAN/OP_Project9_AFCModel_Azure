@@ -19,8 +19,16 @@ def user(dfs_user_art, x):
         return user
     return np.nan
 
+def transform_to_dataframe(dfblob, ityp=0):
+    dfs = bytearray(dfblob.read())
+    dfs = pd.read_csv(BytesIO(dfs))
+    if ityp==1:
+        dfs = pd.read_csv(BytesIO(dfs), dtype=np.float32)
+    return dfs
+
 
 def generate_recommendation(model, user_id, dfs_user_art, dfs, n_items): 
+    logging.info('=========debut funct generatereco')
     # Obtenir une liste de tous les identifiants de films à partir du jeu de données 
     arts_ids = dfs["click_article_id"].value_counts().index
  
@@ -33,7 +41,9 @@ def generate_recommendation(model, user_id, dfs_user_art, dfs, n_items):
     test_set = [[user_id, art_id, 0] for art_id in arts_ids_to_pred] 
     
     # Prédire les notes et générer des recommandations 
+    logging.info('=========debut predictions')
     predictions = model.test(test_set)
+    logging.info('=========end predictions')
     pred_ratings = np.array([pred.est for pred in predictions]) 
     print("Top {0} recommandations d'articles pour l'utilisateur {1} :".format(n_items, user_id)) 
     # Classer les n meilleurs films en fonction des prédictions notes 
@@ -43,18 +53,45 @@ def generate_recommendation(model, user_id, dfs_user_art, dfs, n_items):
         art_id = arts_ids_to_pred[i] 
         print(dfs[dfs["click_article_id"]==art_id]["click_article_id"].values[0] , pred_ratings[i])
         result.append({"article_id":dfs[dfs["click_article_id"]==art_id]["click_article_id"].values[0] , "predictions":str(pred_ratings[i])})
+    logging.info('=========end funct generatereco')
     return result
 
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest, dfsblob: func.InputStream,
+         dfsuserartblob: func.InputStream,
+         articlesembedblob: func.InputStream) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/input/model.pkl?sp=r&st=2022-09-28T04:04:08Z&se=2023-09-28T12:04:08Z&spr=https&sv=2021-06-08&sr=b&sig=B5wtMVnqNKjzodiTotO2ci6Z9OfVCYrEEUuj6pe9nfs%3D")
     download_stream = blob_client.download_blob()
     logging.info('=========below is content of test1')
-    test = download_stream.readall()
+    model = download_stream.readall()
     logging.info('=========above is content of test1')
-    #dfs_user_art = transform_to_dataframe(dfsuserartblob)
-    return func.HttpResponse(
-            "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-            status_code=200
-    )
+    logging.info('=========below is content of files csv')
+    dfs = transform_to_dataframe(dfsblob)
+    dfs_user_art = transform_to_dataframe(dfsuserartblob)
+    df_arts_embedd_acp = transform_to_dataframe(articlesembedblob)
+    logging.info('=========above is content of files csv')
+    req_body_bytes = req.get_body()
+    req_body = req_body_bytes.decode("utf-8")
+    json_body = json.loads(req_body)
+    # logging.info("test:")
+    name = None
+    name = json_body['id_user']
+    logging.info(f"Request name: {name}")
+    if name is not None:
+        name = int(name)
+        logging.info('=========debut generatereco')
+        result = generate_recommendation(model, name, dfs_user_art, dfs, 5)
+        logging.info('=========end generatereco')
+        result = result.to_json(orient="split")
+        #func.HttpResponse.mimetype = 'application/json'
+        func.HttpResponse.charset = 'utf-8'
+        return func.HttpResponse(
+                json.dumps(result),
+                status_code=200
+                )
+    else:
+        return func.HttpResponse(
+              "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
+              status_code=200
+        )
