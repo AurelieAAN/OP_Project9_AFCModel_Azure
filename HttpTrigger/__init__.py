@@ -48,7 +48,7 @@ def generate_recommendation(model, user_id, dfs_user_art, dfs, n_items):
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/?sv=2021-06-08&ss=bfqt&srt=co&sp=r&se=2023-09-28T11:24:20Z&st=2022-09-28T03:24:20Z&spr=https&sig=er7pEG3Z8Gs%2BRxrzZsXEVz2BbWzr4UfEWKZ7%2FDW16uI%3D")
+    blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/input/model.pkl?sp=r&st=2022-09-28T04:04:08Z&se=2023-09-28T12:04:08Z&spr=https&sv=2021-06-08&sr=b&sig=B5wtMVnqNKjzodiTotO2ci6Z9OfVCYrEEUuj6pe9nfs%3D")
     download_stream = blob_client.download_blob()
     logging.info('=========below is content of test1')
     test = download_stream.readall()
