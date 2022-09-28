@@ -62,7 +62,8 @@ def main(req: func.HttpRequest, dfsblob: func.InputStream) -> func.HttpResponse:
     blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/input/model.pkl?sp=r&st=2022-09-28T04:04:08Z&se=2023-09-28T12:04:08Z&spr=https&sv=2021-06-08&sr=b&sig=B5wtMVnqNKjzodiTotO2ci6Z9OfVCYrEEUuj6pe9nfs%3D")
     download_stream = blob_client.download_blob()
     logging.info('=========below is content of test1')
-    model = download_stream.readall()
+    model_b = download_stream.readall()
+    model =  pickle.loads(model_b)
     logging.info('=========above is content of test1')
     logging.info('=========below is content of files csv')
     dfs = transform_to_dataframe(dfsblob)
@@ -78,7 +79,7 @@ def main(req: func.HttpRequest, dfsblob: func.InputStream) -> func.HttpResponse:
     if name is not None:
         name = int(name)
         logging.info('=========debut generatereco')
-        result = generate_recommendation(model, name, dfs_user_art, dfs, 5)
+        result = generate_recommendation(model["algo"], name, dfs_user_art, dfs, 5)
         logging.info('=========end generatereco')
         result = result.to_json(orient="split")
         #func.HttpResponse.mimetype = 'application/json'
