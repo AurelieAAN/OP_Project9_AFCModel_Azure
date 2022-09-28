@@ -27,8 +27,12 @@ def transform_to_dataframe(dfblob, ityp=0):
     return dfs
 
 
-def generate_recommendation(model, user_id, dfs_user_art, dfs, n_items): 
+def generate_recommendation(model_b, user_id, dfs_user_art, dfs, n_items): 
     logging.info('=========debut funct generatereco')
+    logging.info('=========debut pickle')
+    model =  pickle.loads(model_b)
+    model = model["algo"]
+    logging.info('=========end pickle')
     # Obtenir une liste de tous les identifiants de films à partir du jeu de données 
     arts_ids = dfs["click_article_id"].value_counts().index
  
@@ -63,7 +67,6 @@ def main(req: func.HttpRequest, dfsblob: func.InputStream) -> func.HttpResponse:
     download_stream = blob_client.download_blob()
     logging.info('=========below is content of test1')
     model_b = download_stream.readall()
-    model =  pickle.loads(model_b)
     logging.info('=========above is content of test1')
     logging.info('=========below is content of files csv')
     dfs = transform_to_dataframe(dfsblob)
@@ -79,7 +82,7 @@ def main(req: func.HttpRequest, dfsblob: func.InputStream) -> func.HttpResponse:
     if name is not None:
         name = int(name)
         logging.info('=========debut generatereco')
-        result = generate_recommendation(model["algo"], name, dfs_user_art, dfs, 5)
+        result = generate_recommendation(model_b, name, dfs_user_art, dfs, 5)
         logging.info('=========end generatereco')
         func.HttpResponse.charset = 'utf-8'
         logging.info("------------------------------------------finghgjgjh result ")
