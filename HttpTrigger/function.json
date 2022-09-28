@@ -12,13 +12,6 @@
       ]
     },
     {
-      "type": "blob",
-      "direction":"in",
-      "name": "modelblob",
-      "path": "input/model.pkl",
-      "connection": "storageacc_STORAGE"
-    },
-    {
       "type": "http",
       "direction": "out",
       "name": "$return"

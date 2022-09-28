@@ -9,6 +9,7 @@ from io import BytesIO
 from pprint import pprint as pp
 import pickle
 import surprise
+from azure.storage.blob import BlobClient
 
 def user(dfs_user_art, x):
     logging.info('---1 -------begin user()')
@@ -45,10 +46,13 @@ def generate_recommendation(model, user_id, dfs_user_art, dfs, n_items):
     return result
 
 
-def main(req: func.HttpRequest, modelblob: func.InputStream) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    modelrd = bytearray(modelblob.read())
-    loaded_model = pickle.load(open(modelrd, 'rb'))
+    blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/?sv=2021-06-08&ss=bfqt&srt=co&sp=r&se=2023-09-28T11:24:20Z&st=2022-09-28T03:24:20Z&spr=https&sig=er7pEG3Z8Gs%2BRxrzZsXEVz2BbWzr4UfEWKZ7%2FDW16uI%3D")
+    download_stream = blob_client.download_blob()
+    logging.info('=========below is content of test1')
+    test = download_stream.readall()
+    logging.info('=========above is content of test1')
     #dfs_user_art = transform_to_dataframe(dfsuserartblob)
     return func.HttpResponse(
             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
