@@ -81,9 +81,8 @@ def main(req: func.HttpRequest, dfsblob: func.InputStream) -> func.HttpResponse:
         logging.info('=========debut generatereco')
         result = generate_recommendation(model["algo"], name, dfs_user_art, dfs, 5)
         logging.info('=========end generatereco')
-        result = result.to_json(orient="split")
-        #func.HttpResponse.mimetype = 'application/json'
         func.HttpResponse.charset = 'utf-8'
+        logging.info("------------------------------------------finghgjgjh result ")
         return func.HttpResponse(
                 json.dumps(result),
                 status_code=200
