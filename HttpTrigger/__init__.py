@@ -19,11 +19,9 @@ def user(dfs_user_art, x):
         return user
     return np.nan
 
-def transform_to_dataframe(dfblob, ityp=0):
-    dfs = bytearray(dfblob.read())
+def transform_to_dataframe(blob):
+    dfs = bytearray(blob.read())
     dfs = pd.read_csv(BytesIO(dfs))
-    if ityp==1:
-        dfs = pd.read_csv(BytesIO(dfs), dtype=np.float32)
     return dfs
 
 
