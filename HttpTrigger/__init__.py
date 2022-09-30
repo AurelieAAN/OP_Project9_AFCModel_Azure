@@ -20,7 +20,7 @@ def user(dfs_user_art, x):
     return np.nan
 
 def transform_to_dataframe(blob):
-    dfs = bytearray(blob.read())
+    dfs = bytearray(blob)
     dfs = pd.read_csv(BytesIO(dfs))
     return dfs
 
@@ -67,7 +67,10 @@ def main(req: func.HttpRequest, dfsblob: func.InputStream) -> func.HttpResponse:
     model_b = download_stream.readall()
     logging.info('=========above is content of test1')
     logging.info('=========below is content of files csv')
-    dfs = transform_to_dataframe(dfsblob)
+    blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/input/dfs_v2.csv?sp=r&st=2022-09-30T14:18:45Z&se=2022-09-30T22:18:45Z&spr=https&sv=2021-06-08&sr=b&sig=Nb5GtgSFjW0n6cIbPwbsl%2Fzwdsacx8e%2BetdEOAN5S%2FE%3D")
+    download_stream = blob_client.download_blob()
+    download_stream_b = download_stream.readall()
+    dfs = transform_to_dataframe(download_stream_b)
     dfs_user_art = dfs.groupby(["user_id", "click_article_id"])["click_article_id"].count().reset_index(name="nb_click_by_arts")
     logging.info('=========above is content of files csv')
     req_body_bytes = req.get_body()
