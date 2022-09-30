@@ -70,7 +70,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/input/dfs_v2.csv?sp=r&st=2022-09-30T15:09:45Z&se=2023-09-30T23:09:45Z&spr=https&sv=2021-06-08&sr=b&sig=xTXyNiB30%2FxKSrd8kKiykAJBw9AjKg0gE1Wr0FyW1Fs%3D")
     blob = blob_client.download_blob().content_as_text()
     dfs = pd.read_csv(StringIO(blob))
-
+    dfs_user_art = dfs.groupby(["user_id", "click_article_id"])["click_article_id"].count().reset_index(name="nb_click_by_arts")
     return func.HttpResponse(
             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
             status_code=200
