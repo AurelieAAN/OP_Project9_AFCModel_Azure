@@ -65,6 +65,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     download_stream = blob_client.download_blob()
     logging.info('=========below is content of test1')
     model_b = download_stream.readall()
+    logging.info('=========above is content of test1')
+    logging.info('=========below is content of files csv')
+    blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/input/dfs_v2.csv?sp=r&st=2022-09-30T15:09:45Z&se=2023-09-30T23:09:45Z&spr=https&sv=2021-06-08&sr=b&sig=xTXyNiB30%2FxKSrd8kKiykAJBw9AjKg0gE1Wr0FyW1Fs%3D")
+    download_stream = blob_client.download_blob()
+    dfs_b = download_stream.readall()
     return func.HttpResponse(
             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
             status_code=200
