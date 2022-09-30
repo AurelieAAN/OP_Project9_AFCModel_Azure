@@ -54,7 +54,7 @@ def generate_recommendation(model_b, user_id, dfs_user_art, dfs, n_items):
     for i in index_max: 
         art_id = arts_ids_to_pred[i] 
         print(dfs[dfs["click_article_id"]==art_id]["click_article_id"].values[0] , pred_ratings[i])
-        result.append({"article_id":dfs[dfs["click_article_id"]==art_id]["click_article_id"].values[0] , "predictions":str(pred_ratings[i])})
+        result.append({"article_id": str(dfs[dfs["click_article_id"]==art_id]["click_article_id"].values[0]) , "predictions":str(pred_ratings[i])})
     logging.info('=========end funct generatereco')
     return result
 
@@ -85,7 +85,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         result = generate_recommendation(model_b, name, dfs_user_art, dfs, 5)
         logging.info('=========end generatereco')
         func.HttpResponse.charset = 'utf-8'
-        logging.info("------------------------------------------finghgjgjh result ")
+        logging.info("------------------------------------------begin result")
         return func.HttpResponse(
                 json.dumps(result),
                 status_code=200
