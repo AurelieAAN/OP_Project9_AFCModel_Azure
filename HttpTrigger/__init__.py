@@ -71,7 +71,27 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     blob = blob_client.download_blob().content_as_text()
     dfs = pd.read_csv(StringIO(blob))
     dfs_user_art = dfs.groupby(["user_id", "click_article_id"])["click_article_id"].count().reset_index(name="nb_click_by_arts")
-    return func.HttpResponse(
-            "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-            status_code=200
-    )
+    logging.info('=========above is content of files csv')
+    req_body_bytes = req.get_body()
+    req_body = req_body_bytes.decode("utf-8")
+    json_body = json.loads(req_body)
+    # logging.info("test:")
+    name = None
+    name = json_body['id_user']
+    logging.info(f"Request name: {name}")
+    if name is not None:
+        name = int(name)
+        logging.info('=========debut generatereco')
+        result = generate_recommendation(model_b, name, dfs_user_art, dfs, 5)
+        logging.info('=========end generatereco')
+        func.HttpResponse.charset = 'utf-8'
+        logging.info("------------------------------------------finghgjgjh result ")
+        return func.HttpResponse(
+                json.dumps(result),
+                status_code=200
+                )
+    else:
+        return func.HttpResponse(
+              "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
+              status_code=200
+        )
