@@ -59,40 +59,13 @@ def generate_recommendation(model_b, user_id, dfs_user_art, dfs, n_items):
     return result
 
 
-def main(req: func.HttpRequest, dfsblob: func.InputStream) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/input/model.pkl?sp=r&st=2022-09-28T04:04:08Z&se=2023-09-28T12:04:08Z&spr=https&sv=2021-06-08&sr=b&sig=B5wtMVnqNKjzodiTotO2ci6Z9OfVCYrEEUuj6pe9nfs%3D")
     download_stream = blob_client.download_blob()
     logging.info('=========below is content of test1')
     model_b = download_stream.readall()
-    logging.info('=========above is content of test1')
-    logging.info('=========below is content of files csv')
-    blob_client = BlobClient.from_blob_url("https://rgproject9weub2b4.blob.core.windows.net/input/dfs_v2.csv?sp=r&st=2022-09-30T14:18:45Z&se=2022-09-30T22:18:45Z&spr=https&sv=2021-06-08&sr=b&sig=Nb5GtgSFjW0n6cIbPwbsl%2Fzwdsacx8e%2BetdEOAN5S%2FE%3D")
-    download_stream = blob_client.download_blob()
-    download_stream_b = download_stream.readall()
-    dfs = transform_to_dataframe(download_stream_b)
-    dfs_user_art = dfs.groupby(["user_id", "click_article_id"])["click_article_id"].count().reset_index(name="nb_click_by_arts")
-    logging.info('=========above is content of files csv')
-    req_body_bytes = req.get_body()
-    req_body = req_body_bytes.decode("utf-8")
-    json_body = json.loads(req_body)
-    # logging.info("test:")
-    name = None
-    name = json_body['id_user']
-    logging.info(f"Request name: {name}")
-    if name is not None:
-        name = int(name)
-        logging.info('=========debut generatereco')
-        result = generate_recommendation(model_b, name, dfs_user_art, dfs, 5)
-        logging.info('=========end generatereco')
-        func.HttpResponse.charset = 'utf-8'
-        logging.info("------------------------------------------finghgjgjh result ")
-        return func.HttpResponse(
-                json.dumps(result),
-                status_code=200
-                )
-    else:
-        return func.HttpResponse(
-              "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-              status_code=200
-        )
+    return func.HttpResponse(
+            "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
+            status_code=200
+    )
